@@ -37,8 +37,14 @@ console.log(scale);
 // define a bar and add four notes
 // duration in ticks (128 per beat)
 
-function addNotesFromText(char){
-    track.addNote(0, scale[char], 128);
+function addNotesFromText(line){
+
+
+    Object.keys(line.chars).forEach(function(key){
+        track.addNoteOn(0, scale[key], 0 , Math.floor((((line.chars[key]/line.charsTotal)*100)/100)*128) -1 );
+        track.addNoteOff(0, scale[key], 128 * line.chars[key]);
+    });
+
 }
 
 function readLines(input, lineFunc, cb) {
@@ -67,8 +73,9 @@ function lineStats(data) {
     var wordCount = data.split(" ").length;
 
     var chars = {};
+    var charsTotal = 0;
     data.toLowerCase().replace( /[^a-z]/g ,"").split("").forEach(function(c){
-        chars[c] ? ++chars[c] : chars[c] = 1;
+        chars[c] ? ++chars[c] : chars[c] = 1; charsTotal++;
     });
 
     var nonchars = {};
@@ -80,6 +87,7 @@ function lineStats(data) {
         line: data,
         words: wordCount,
         chars: chars,
+        charsTotal: charsTotal,
         nonchars: nonchars
     });
 }
@@ -95,9 +103,7 @@ var input = fs.createReadStream(inputfile);
 readLines(input, lineStats, function(err, stats) {
     //console.log(stats);
     for(stat in stats){
-      Object.keys(stats[stat].chars).forEach(function(key){
-          addNotesFromText(key);
-      });
+          addNotesFromText(stats[stat]);
     }
     fs.writeFileSync(outputfile, file.toBytes(), 'binary');
 });
