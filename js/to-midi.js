@@ -7,6 +7,7 @@
  */
 
 var fs = require("fs");
+var S = require('string');
 
 var fileStats = [];
 var Midi = require('jsmidgen');
@@ -15,6 +16,9 @@ var file = new Midi.File();
 
 // could have separate tracks ?
 var track = new Midi.Track();
+
+track.setTempo(120);
+//track.setInstrument(0,0xd);
 
 file.addTrack(track);
 
@@ -32,18 +36,48 @@ for(var i=0; i < 26; i++){
     scale[alphabet[i]] = note.replace(' ', '') + octave;
 }
 
-console.log(scale);
+//console.log(scale);
 
 // define a bar and add four notes
 // duration in ticks (128 per beat)
-
 function addNotesFromText(line){
 
+//    var instrument = (Math.floor((Math.random()*119)+1));
+//    track.setInstrument(10,instrument.toString(16));
 
-    Object.keys(line.chars).forEach(function(key){
-        track.addNoteOn(0, scale[key], 0 , Math.floor((((line.chars[key]/line.charsTotal)*100)/100)*128) -1 );
-        track.addNoteOff(0, scale[key], 128 * line.chars[key]);
+    Object.keys(line.chars).forEach(function(key) {
+
+        var velocity = Math.floor((((line.chars[key]/line.charsTotal)*100)/100)*128) -1;
+        if(velocity < 40) {
+            velocity = 100 - velocity;
+        }
+
+        var rand = (Math.floor((Math.random()*8)+1)) - 1;
+
+        console.log("Note on [0, " + scale[key.toLowerCase()] + ", " + rand*64 + ", " +  velocity + " ]");
+
+        if( S(key).isUpper() ){
+            track.addNoteOn(0, scale[key.toLowerCase()], rand*64 ,  velocity);
+        } else {
+            track.addNoteOn(0, scale[key.toLowerCase()], 0,  velocity);
+
+        }
+
+////        console.log("Node off [0, " + scale[key] + ", " +  64 * line.chars[key] + " ]");
+//
+//        track.addNoteOff(0, scale[key.toLowerCase()], 64 * line.chars[key]);
     });
+
+    Object.keys(line.chars).forEach(function(key) {
+
+        if( S(key).isUpper() ){
+            //track.addNoteOff(0, scale[key.toLowerCase()], 64 * line.chars[key]);
+        } else {
+            track.addNoteOff(0, scale[key.toLowerCase()]);
+
+        }
+    });
+
 
 }
 
@@ -74,7 +108,10 @@ function lineStats(data) {
 
     var chars = {};
     var charsTotal = 0;
-    data.toLowerCase().replace( /[^a-z]/g ,"").split("").forEach(function(c){
+//    data.toLowerCase().replace( /[^a-z]/g ,"").split("").forEach(function(c){
+//        chars[c] ? ++chars[c] : chars[c] = 1; charsTotal++;
+//    });
+    data.replace( /[^a-zA-Z]/g ,"").split("").forEach(function(c){
         chars[c] ? ++chars[c] : chars[c] = 1; charsTotal++;
     });
 
@@ -96,12 +133,9 @@ function lineStats(data) {
 var inputfile = process.argv[2];
 var outputfile = process.argv[3];
 
-
-//var input = fs.createReadStream('charge-of-light-brigade.txt');
-//var input = fs.createReadStream('lovesong-j-alfred-prufrock.txt');
 var input = fs.createReadStream(inputfile);
 readLines(input, lineStats, function(err, stats) {
-    //console.log(stats);
+    console.log(stats);
     for(stat in stats){
           addNotesFromText(stats[stat]);
     }
