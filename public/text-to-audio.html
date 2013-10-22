@@ -45,10 +45,10 @@
    <span id="time2" class="time" style="text-align: left;">-0:00</span>
   </div>
  </div>
- <div id="textForm" style="background: rgba(255,255,0,0.5); position: relative;color: #000; z-index: -1;padding: 5px 11px 5px;">
+ <div id="textForm" style="position: relative;color: #000; z-index: -1;padding: 5px 11px 5px;">
      <p>Enter text to convert: </p>
      <form method="POST" action="javascript:submitForm();">
-         <textarea rows="5" cols="80" id="textToConvert" name="textToConvert" value=""></textarea>
+         <textarea rows="30" cols="80" id="textToConvert" name="textToConvert" value=""></textarea>
          <input type="submit" id="submit" name="convertText" value="Convert Text"/>
      </form>
      <div>
@@ -154,7 +154,7 @@ Event.add(window, "load", function(event) {
 			}
 		});
 		//
-		ColorSphereBackground();
+		//ColorSphereBackground();
 		MIDIPlayerPercentage(player);
 		//
 		MIDI.loader.stop();
