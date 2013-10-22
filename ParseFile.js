@@ -2,7 +2,7 @@ var fs = require("fs");
 
 var fileStats = [];
 
-function readLines(input, func) {
+function readLines(input, lineFunc, cb) {
     var remaining = '';
 
     input.on('data', function(data) {
@@ -11,16 +11,16 @@ function readLines(input, func) {
         while (index > -1) {
             var line = remaining.substring(0, index);
             remaining = remaining.substring(index + 1);
-            func(line);
+            lineFunc(line);
             index = remaining.indexOf('\n');
         }
     });
 
     input.on('end', function() {
         if (remaining.length > 0) {
-            func(remaining);
-            console.log(fileStats);
+            lineFunc(remaining);
         }
+        cb(null, fileStats);
     });
 }
 
@@ -45,5 +45,7 @@ function lineStats(data) {
     });
 }
 
-var input = fs.createReadStream('lightbrigade.txt');
-readLines(input, lineStats);
+var input = fs.createReadStream('charge-of-light-brigade.txt');
+readLines(input, lineStats, function(err, stats) {
+    console.log(stats);
+});
