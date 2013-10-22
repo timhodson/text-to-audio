@@ -41,9 +41,6 @@ function addNotesFromText(char){
     track.addNote(0, scale[char], 128);
 }
 
-
-
-
 function readLines(input, lineFunc, cb) {
     var remaining = '';
 
@@ -70,7 +67,7 @@ function lineStats(data) {
     var wordCount = data.split(" ").length;
 
     var chars = {};
-    data.toLowerCase().replace( /[^a-z]/g ,"").split("").sort().forEach(function(c){
+    data.toLowerCase().replace( /[^a-z]/g ,"").split("").forEach(function(c){
         chars[c] ? ++chars[c] : chars[c] = 1;
     });
 
@@ -87,7 +84,14 @@ function lineStats(data) {
     });
 }
 
-var input = fs.createReadStream('charge-of-light-brigade.txt');
+
+var inputfile = process.argv[2];
+var outputfile = process.argv[3];
+
+
+//var input = fs.createReadStream('charge-of-light-brigade.txt');
+//var input = fs.createReadStream('lovesong-j-alfred-prufrock.txt');
+var input = fs.createReadStream(inputfile);
 readLines(input, lineStats, function(err, stats) {
     //console.log(stats);
     for(stat in stats){
@@ -95,5 +99,6 @@ readLines(input, lineStats, function(err, stats) {
           addNotesFromText(key);
       });
     }
-    fs.writeFileSync('test.midi', file.toBytes(), 'binary');
+    fs.writeFileSync(outputfile, file.toBytes(), 'binary');
 });
+
