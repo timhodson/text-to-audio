@@ -111,7 +111,7 @@ module.exports = function (app) {
                 });
 
             }
-            
+
 //            Object.keys(line.chars).forEach(function(key) {
 //
 //                var velocity = Math.floor((((line.chars[key]/line.charsTotal)*100)/100)*128) -1;
