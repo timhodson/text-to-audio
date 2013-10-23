@@ -2,7 +2,7 @@
 <html xmlns = "http://www.w3.org/1999/xhtml">
 <head>
  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
- <title>MIDI.js - Sequencing in Javascript.</title>
+ <title>Text to Audio</title>
  <!-- midi.js css -->
  <link href="/css/MIDIPlayer.css" rel="stylesheet" type="text/css" />
  <!-- midi.js package -->
@@ -29,7 +29,7 @@
 <body>
 <h1>Text to Audio</h1>
 <div style="position: fixed; top: 0; left: 0; z-index: 4; border-radius: 5px; overflow: hidden;" id="colors"></div><div style="text-align: center; border-radius: 5px; position: absolute; top: -70px; left: -40px; opacity: 0.9" id="colors"></div>
-<div style="margin-bottom: 50px; border: 1px solid #000; background: rgba(255,255,255,0.5); border-radius: 10px; float: left; width: 800px; padding-bottom: 100px; position: relative; z-index: 2;">
+<div style="margin-bottom: 50px; border: 1px solid #000; background: rgba(255,255,255,0.5); border-radius: 10px; float: left; width: 800px;  position: relative; z-index: 2;">
  <div class="player" style="height: 42px; box-shadow: 0 -1px #000; margin-bottom: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0;">
   <div style="margin: 0 auto; width: 160px; float: right;">
   <input type="image" src="./images/pause.png" align="absmiddle" value="pause" onclick="pausePlayStop()" id="pausePlayStop">
@@ -49,9 +49,9 @@
      <p>Enter text to convert: </p>
      <form method="POST" action="javascript:submitForm();">
          <textarea rows="30" cols="80" id="textToConvert" name="textToConvert" value=""></textarea>
-         <input type="submit" id="submit" name="convertText" value="Convert Text"/>
+         <center><input type="submit" id="submit" name="convertText" value="hit me with your rhythm click" class="bigbutton"/></center>
      </form>
-     <div>
+     <div style="margin-top: 20px; line-height: 1em;">
         <a href="javascript:selectPoem(0);">The Lady of Shallot - Tennyson</a><br/>
         <a href="javascript:selectPoem(1);">The charge of the light brigade - Tennyson</a><br/>
         <a href="javascript:selectPoem(2);">The Duet - Ella Wheeler Whilcox</a><br/>
