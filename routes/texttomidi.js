@@ -31,15 +31,13 @@ module.exports = function (app) {
 
             var chars = {};
             var charsTotal = 0;
-//            data.toLowerCase().replace( /[^a-z]/g ,"").split("").forEach(function(c){
-//                chars[c] ? ++chars[c] : chars[c] = 1; charsTotal++;
-//            });
+
             line.replace( /[^a-zA-Z]/g ,"").split("").forEach(function(c){
                 chars[c] ? ++chars[c] : chars[c] = 1; charsTotal++;
             });
 
             var nonchars = {};
-            line.toLowerCase().replace( /[a-z]/g ,"").split("").sort().forEach(function(c){
+            line.toLowerCase().replace( /[a-zA-Z]/g ,"").split("").sort().forEach(function(c){
                 nonchars[c] ? ++nonchars[c] : nonchars[c] = 1;
             });
 
@@ -54,38 +52,99 @@ module.exports = function (app) {
 
         textStats.forEach(function(line){
 //            var instrument = (Math.floor((Math.random()*119)+1));
-//            track.setInstrument(10,instrument.toString(16));
+            //var instrument = 118;
+            //track.setInstrument(1, instrument.toString(16));
+            console.log("----------------------------------------");
+            var firstIteration = true;
 
-            Object.keys(line.chars).forEach(function(key) {
+            var keys = Object.keys(line.chars);
 
-                var velocity = Math.floor((((line.chars[key]/line.charsTotal)*100)/100)*128) -1;
-                if(velocity < 40) {
-                    velocity = 100 - velocity;
+            var charsPerWord = Math.floor(keys.length / line.words);
+
+            var startOffset = 32;
+            var offset = 0;
+
+            for(var i=0; i<line.words; i++) {
+
+                var chosenKeys = [];
+
+                for(var x=charsPerWord; x>0; --x){
+                    var randomPos = (Math.floor((Math.random()*keys.length)+1)) -1;
+                    chosenKeys.push( keys[randomPos] );
                 }
 
-                var rand = (Math.floor((Math.random()*8)+1)) - 1;
 
-                console.log("Note on [0, " + scale[key.toLowerCase()] + ", " + rand*64 + ", " +  velocity + " ]");
+                chosenKeys.forEach(function(key) {
+                    console.log("current key:" + key);
 
-                if( S(key).isUpper() ){
-                    track.setInstrument(1, 0x18);
-                    track.addNoteOn(1, scale[key.toLowerCase()], rand*64 ,  velocity);
-                } else {
-                    track.addNoteOn(0, scale[key.toLowerCase()], 0,  velocity);
-                }
+                    var velocity = Math.floor((((line.chars[key]/line.charsTotal)*100)/100)*128) -1;
+                    if(velocity < 40) {
+                        velocity = 100 - velocity;
+                    }
 
-//        console.log("Node off [0, " + scale[key] + ", " +  64 * line.chars[key] + " ]");
+                    var rand = (Math.floor((Math.random()*4)+1));
 
-//                track.addNoteOff(0, scale[key.toLowerCase()], 64 * line.chars[key]);
-            });
+                    if( S(key).isUpper() || firstIteration == true){
+                        //track.setInstrument(1, 0x18);
+                        track.addNoteOn(1, scale[key.toLowerCase()], rand*64 ,  velocity);
+                        console.log("Note on [1, " + scale[key.toLowerCase()] + ", " + rand*offset + ", " +  velocity + " ]");
+                        firstIteration = false;
+                    } else {
+                        console.log("Note on [0, " + scale[key.toLowerCase()] + ", " + 0 + ", " +  velocity + " ]");
+                        track.addNoteOn(0, scale[key.toLowerCase()], 0,  velocity);
+                    }
 
-            Object.keys(line.chars).forEach(function(key) {
-                if( S(key).isUpper() ){
-                    track.addNoteOff(1, scale[key.toLowerCase()], 64 * line.chars[key]);
-                } else {
-                    track.addNoteOff(0, scale[key.toLowerCase()]);
-                }
-            });
+                    offset += startOffset;
+
+                });
+
+                chosenKeys.forEach(function(key) {
+                    if( S(key).isUpper() || firstIteration){
+                        console.log("Note off [1, " + scale[key.toLowerCase()] + ", " + 64 * line.chars[key] + " ]");
+
+                        track.addNoteOff(1, scale[key.toLowerCase()], 64 * line.chars[key]);
+                        firstIteration = false;
+                    } else {
+                        console.log("Note off [0, " + scale[key.toLowerCase()] + "0 ]");
+                        track.addNoteOff(0, scale[key.toLowerCase()]);
+                    }
+                });
+
+            }
+            
+//            Object.keys(line.chars).forEach(function(key) {
+//
+//                var velocity = Math.floor((((line.chars[key]/line.charsTotal)*100)/100)*128) -1;
+//                if(velocity < 40) {
+//                    velocity = 100 - velocity;
+//                }
+//
+//                var rand = (Math.floor((Math.random()*4)+1));
+//
+//                if( S(key).isUpper() || firstIteration == true){
+//                    //track.setInstrument(1, 0x18);
+//                    track.addNoteOn(1, scale[key.toLowerCase()], rand*64 ,  velocity);
+//                    console.log("Note on [1, " + scale[key.toLowerCase()] + ", " + rand*64 + ", " +  velocity + " ]");
+//                    firstIteration = false;
+//                } else {
+//                    console.log("Note on [0, " + scale[key.toLowerCase()] + ", " + 0 + ", " +  velocity + " ]");
+//                    track.addNoteOn(0, scale[key.toLowerCase()], 0,  velocity);
+//                }
+//            });
+//
+//            firstIteration = true;
+//            Object.keys(line.chars).forEach(function(key) {
+//                if( S(key).isUpper() || firstIteration){
+//                    console.log("Note off [1, " + scale[key.toLowerCase()] + ", " + 64 * line.chars[key] + " ]");
+//
+//                    track.addNoteOff(1, scale[key.toLowerCase()], 64 * line.chars[key]);
+//                    firstIteration = false;
+//                } else {
+//                    console.log("Note off [0, " + scale[key.toLowerCase()] + "0 ]");
+//                    track.addNoteOff(0, scale[key.toLowerCase()]);
+//                }
+//            });
+
         });
 
         var output = "data:audio/midi;base64," + new Buffer(file.toBytes(),'binary').toString("base64");

@@ -131,34 +131,64 @@ Event.add(window, "load", function(event) {
 	}
 	//
 	MIDI.loader = new widgets.Loader;
-	MIDI.loadPlugin(function () {
-		// this is the language we are running in
-		//var title = document.getElementById("title");
-		//title.innerHTML = "Sound being generated with " + MIDI.lang + ".";
-		// this sets up the MIDI.Player and gets things going...
-		player = MIDI.Player;
-		player.timeWarp = 1; // speed the song is played back
-		//player.loadFile(song[0], player.start);
-		// control the piano keys colors
-		var colorMap = MusicTheory.Synesthesia.map();
-		player.addListener(function(data) {
-			var pianoKey = data.note - MIDI.pianoKeyOffset;
-			var d = colorElements[pianoKey];
-			if (data.message === 144) {
-				var map = colorMap[data.note - 27];
-				if (map) d.style.background = map.hex;
-				d.style.color = "#fff";
-			} else {
-				d.style.background = "";
-				d.style.color = "";
-			}
-		});
-		//
-		//ColorSphereBackground();
-		MIDIPlayerPercentage(player);
-		//
-		MIDI.loader.stop();
-	});
+    MIDI.loadPlugin({
+        soundfontUrl: "/soundfont/",
+        instruments: ["acoustic_grand_piano", "synth_drum"],
+        callback: function(){
+            MIDI.programChange(0,0);
+            MIDI.programChange(1,118);
+            player = MIDI.Player;
+            player.timeWarp = 1; // speed the song is played back
+            //player.loadFile(song[0], player.start);
+            // control the piano keys colors
+            var colorMap = MusicTheory.Synesthesia.map();
+            player.addListener(function(data) {
+                var pianoKey = data.note - MIDI.pianoKeyOffset;
+                var d = colorElements[pianoKey];
+                if (data.message === 144) {
+                    var map = colorMap[data.note - 27];
+                    if (map) d.style.background = map.hex;
+                    d.style.color = "#fff";
+                } else {
+                    d.style.background = "";
+                    d.style.color = "";
+                }
+            });
+            //
+            //ColorSphereBackground();
+            MIDIPlayerPercentage(player);
+            //
+            MIDI.loader.stop();
+        }
+    });
+//	MIDI.loadPlugin(function () {
+//		// this is the language we are running in
+//		//var title = document.getElementById("title");
+//		//title.innerHTML = "Sound being generated with " + MIDI.lang + ".";
+//		// this sets up the MIDI.Player and gets things going...
+//		player = MIDI.Player;
+//		player.timeWarp = 1; // speed the song is played back
+//		//player.loadFile(song[0], player.start);
+//		// control the piano keys colors
+//		var colorMap = MusicTheory.Synesthesia.map();
+//		player.addListener(function(data) {
+//			var pianoKey = data.note - MIDI.pianoKeyOffset;
+//			var d = colorElements[pianoKey];
+//			if (data.message === 144) {
+//				var map = colorMap[data.note - 27];
+//				if (map) d.style.background = map.hex;
+//				d.style.color = "#fff";
+//			} else {
+//				d.style.background = "";
+//				d.style.color = "";
+//			}
+//		});
+//		//
+//		//ColorSphereBackground();
+//		MIDIPlayerPercentage(player);
+//		//
+//		MIDI.loader.stop();
+//	});
 });
 
 ///////  ///////
